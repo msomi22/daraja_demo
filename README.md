@@ -13,7 +13,7 @@
 ## Get token services: 
 * Set key and secret (username and password) in environment variables if not done so.
 * invoke the services below.
-**- [http://localhost:8080/auth/10] -**
+[http://localhost:8080/auth/10]
 * 10 is an ID, or client indetifier
 * sample response
 ```{
