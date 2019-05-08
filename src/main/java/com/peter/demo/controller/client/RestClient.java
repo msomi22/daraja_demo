@@ -5,22 +5,34 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.peter.demo.bean.Response;
 import com.peter.demo.bean.Token;
+import com.peter.demo.entity.TokenEntity;
+import com.peter.demo.persistence.TokenRepository;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
 /**
+ * psql basics
+ * 
+ * 
+ * \l [list databases]
+ * \c database_name
+ * \d list tables
  * 
  * @author t_pnjeru
  *
  */
 @Component
 public class RestClient {
+	
+	@Autowired
+	private TokenRepository tokenRepository;
 
 	private final String CONSUMER_KEY = System.getenv("CONSUMER_KEY");
 	private final String CONSUMER_SECRET =  System.getenv("CONSUMER_SECRET");
@@ -52,6 +64,11 @@ public class RestClient {
 
 		Gson g = new Gson();
 		Token token = g.fromJson(output, Token.class);
+		
+		if(token != null) {
+			TokenEntity tokenEntity = new TokenEntity(token.getAccess_token(), token.getExpires_in());
+			tokenRepository.save(tokenEntity);
+		}
 
 		return token;
 	}
