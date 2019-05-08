@@ -1,5 +1,5 @@
 # Java REST Service and Client
-## A simple REST, or rather RESTful application for consuming Safaricom's MPESA daraja interface.
+### A simple REST, or rather RESTful application for consuming Safaricom's MPESA daraja interface.
 * This application was build using the followng technologies
 1. Spring boot
 2. Java 8
