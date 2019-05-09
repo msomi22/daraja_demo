@@ -27,3 +27,16 @@ HELP.md
 
 ### VS Code ###
 .vscode/
+
+
+###Docker common commands 
+docker run  -p 2020:8082 daraja:latest
+docker run -e CONSUMER_KEY=username -e CONSUMER_SECRET=password -p 2020:8082 daraja:latest
+docker ps
+docker rm -f 5adc95e70956
+docker run -e CONSUMER_KEY= -p 2020:8082 daraja:latest
+docker container run --rm -it daraja:latest sh
+docker exec  -it daraja:latest
+docker run -p 2020:8082 daraja:latest
+docker run daraja:latest
+docker images
