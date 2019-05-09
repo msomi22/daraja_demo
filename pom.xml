@@ -17,6 +17,8 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<project.build.sourceEmcoding>UTF-8</project.build.sourceEmcoding>
+		<dockerfile-maven-version>1.4.3</dockerfile-maven-version>
 	</properties>
 
 	<dependencies>
@@ -74,6 +76,8 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
 			</plugin>
 		</plugins>
 	</build>
