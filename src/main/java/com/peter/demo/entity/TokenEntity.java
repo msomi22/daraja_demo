@@ -21,6 +21,11 @@ public class TokenEntity {
 	
 	private String token;
 	private String expiry;
+	
+	public TokenEntity() {
+		
+	}
+	
 
 	/**
 	 * 

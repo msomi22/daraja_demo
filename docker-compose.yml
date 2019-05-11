@@ -1,0 +1,22 @@
+services: 
+  application: 
+    environment: 
+      CONSUMER_KEY: replace_with_yours
+      CONSUMER_SECRET: replace_with_yours
+    image: "daraja:latest"
+    links: 
+      - postgres
+    ports: 
+      - "2020:8082"
+  postgres: 
+    environment: 
+      PGDATA: /tmp
+      POSTGRES_DB: demodb
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: root
+    image: "postgres:latest"
+    ports: 
+      - "5433:5432"
+    volumes: 
+      - "e:/docker/volume/postgres:/var/lib/postgresql/data"
+version: "3"
