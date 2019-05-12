@@ -25,13 +25,40 @@ public class TokenEntity {
 	public TokenEntity() {
 		
 	}
-	
 
 	/**
 	 * 
 	 */
 	public TokenEntity(String token,String expiry) {
 		this.token = token;
+		this.expiry = expiry;
+	}
+
+	
+	
+	
+	
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public String getExpiry() {
+		return expiry;
+	}
+
+	public void setExpiry(String expiry) {
 		this.expiry = expiry;
 	}
 

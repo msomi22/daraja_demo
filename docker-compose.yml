@@ -1,8 +1,8 @@
 services: 
   application: 
     environment: 
-      CONSUMER_KEY: replace_with_yours
-      CONSUMER_SECRET: replace_with_yours
+      CONSUMER_KEY: BdxK4NoxTTzibPykKoCjQ1YFhgknwpMM
+      CONSUMER_SECRET: OogO6G9bB7Lad933
     image: "daraja:latest"
     links: 
       - postgres

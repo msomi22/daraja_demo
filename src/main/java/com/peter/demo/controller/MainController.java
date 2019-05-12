@@ -35,9 +35,11 @@ public class MainController {
 	}
 
 	@RequestMapping(path="/tokens", method=RequestMethod.GET)
-	public ResponseEntity<List<TokenEntity>> findAll(){ 
+	public ResponseEntity<Object> findAll(){ 
 		System.out.println("get all stored tokens"); 
-		return ResponseEntity.ok(entityService.findAll());
+		List<TokenEntity> list = entityService.findAll();
+		System.out.println("get all stored tokens" + list); 
+		return ResponseEntity.ok(list);
 	}
 
 
