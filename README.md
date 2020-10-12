@@ -7,7 +7,7 @@
 4. Jersey Client
 5. Docker 
 
-# pull posgres from docker hub
+# pull postgresql from docker hub
 
 #Important note
 * get the host from db container [ docker exec 6b2ca68b196e env] - you might have run this container first. [docker-compose up -d ] - refer to docker_db_docs directory. 
