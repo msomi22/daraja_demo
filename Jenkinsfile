@@ -22,7 +22,7 @@ node {
          //Remove maven-build-container if it exists
         // sh " docker rm -f daraja:latest"
        
-        sh "docker run --name daraja:latest --volumes-from maven-build-container -d -p 2020:8082 denisdbell/petclinic-deploy"
+        sh "docker run --name daraja:latest --volumes-from maven-build-container -d -p 2020:8082 daraja/daraja"
    }
 
 }
