@@ -1,57 +1,302 @@
-# Java REST Service and Client
-### A simple REST, or rather RESTful application for consuming Safaricom's MPESA daraja interface.
-* This application was build using the followng technologies
-1. Spring boot 2
-2. Java 8
-3. PostgreSQL database
-4. Jersey Client
-5. Docker 
+# Daraja API Demo
 
-# pull postgresql from docker hub
+A **Spring Boot demo application** created in **2019** to explore integration with Safaricom's **M-Pesa Daraja API**, with a focus on OAuth access-token generation, REST client integration, persistence, containerization, and basic CI/CD.
 
-#Important note
-* get the host from db container [ docker exec 6b2ca68b196e env] - you might have run this container first. [docker-compose up -d ] - refer to docker_db_docs directory. 
-*once done prune the container
-* replace it in the line below  
-* spring.datasource.url=jdbc:postgresql://6b2ca68b196e:5433/demodb
-### API keys
-* replace as show in the compose script 
+This repository is intentionally preserved as a small integration demo rather than a production payment service.
 
-## build the code
-* mvn install - to get the updated jar
-* build the image by running the command below
-* docker build --tag="daraja:latest"  .
+> **Historical demo:** the project uses Spring Boot 2.1, Java 8, Jersey 1.x, Springfox Swagger 2, and other dependencies from its original period. It should be modernized before being used as the basis of a current production integration.
 
+## What the project demonstrates
 
+The application demonstrates several pieces of a typical external API integration:
 
-## deploy the images  by executing the below 
-##Deploy in docker 
-* cd to the root of the application (see the compose script)
-* run the below 
-* docker-compose up -d 
+- Calling the Safaricom Daraja sandbox OAuth endpoint
+- Reading consumer credentials from environment variables
+- Generating HTTP Basic authentication credentials
+- Requesting an OAuth access token
+- Mapping the API response into Java objects
+- Persisting returned token information with Spring Data JPA
+- Exposing REST endpoints through Spring MVC
+- Using PostgreSQL as the persistence store
+- Packaging the application with Maven
+- Running the application in Docker
+- Running PostgreSQL with Docker Compose
+- Exposing Spring Boot Actuator endpoints
+- Providing Swagger/OpenAPI-style API documentation through Springfox
+- Experimenting with a Jenkins-based build/deployment pipeline
 
-# API OPERATIONS
-## Get token services: 
-* Set key and secret (username and password) in environment variables if not done so.
-* invoke the services below.
-* [Authentication service URL] (http://localhost:2020/auth/10) 
-* 10 is an ID, or client indetifier
-* sample response
-```{
-    "access_token": "tSmDp3RKd6yUxLhT7EuGtGjFsHh2",
-    "expires_in": "3599"
+## Technology stack
+
+| Area | Technology |
+| --- | --- |
+| Language | Java 8 |
+| Framework | Spring Boot 2.1.4 |
+| Web | Spring MVC / REST |
+| Persistence | Spring Data JPA |
+| Database | PostgreSQL |
+| HTTP client | Jersey Client / Apache HttpClient |
+| JSON | Gson |
+| API documentation | Springfox Swagger 2 |
+| Monitoring | Spring Boot Actuator |
+| Build | Maven / Maven Wrapper |
+| Containerization | Docker |
+| Local orchestration | Docker Compose |
+| CI/CD experiment | Jenkins |
+| License | GNU GPL v3 |
+
+## Architecture
+
+```text
+Client
+  |
+  v
+Spring REST Controller
+  |
+  v
+Daraja Integration Client
+  |
+  +------------------------+
+  |                        |
+  v                        v
+Safaricom Daraja      Spring Data JPA
+Sandbox API                 |
+                            v
+                       PostgreSQL
 ```
 
+The main integration path is implemented by `RestClient`, which reads the Daraja consumer key and consumer secret from environment variables, creates a Basic Authorization header, calls the Daraja sandbox OAuth endpoint, and maps the response into the application's token model.
 
+## Main endpoints
 
-### othe important docker commands
+### Generate a Daraja access token
+
+```http
+GET /auth/{id}
 ```
-1. docker-compose build
-2. docker-compose up -d 
-3. docker-compose down
-4. docker logs --details container_id
-5. docker logs --details container_id
-6. docker container prune
-7. docker build --tag="daraja:latest"  .
-8. docker exec 6b2ca68b196e env
+
+Example:
+
+```text
+GET http://localhost:2020/auth/10
 ```
+
+The current implementation uses the path parameter as a demo/client identifier and requests an OAuth token from the Safaricom sandbox.
+
+A successful Daraja response is mapped into an object containing values similar to:
+
+```json
+{
+  "access_token": "<token>",
+  "expires_in": "3599"
+}
+```
+
+### View persisted token records
+
+```http
+GET /tokens
+```
+
+This returns token records persisted through Spring Data JPA.
+
+> Persisting raw access tokens is useful for demonstrating persistence, but it is **not a pattern I would recommend for a modern production payment integration** without appropriate encryption, retention controls, access restrictions, and a clear operational need.
+
+## Monitoring
+
+Spring Boot Actuator is configured under:
+
+```text
+/monitor
+```
+
+The project enables actuator endpoints for development/demo purposes.
+
+For a modern production deployment, actuator exposure should be restricted and secured.
+
+## Project structure
+
+```text
+daraja-demo/
+├── src/
+│   ├── main/
+│   │   ├── java/com/peter/demo/
+│   │   │   ├── bean/            # Daraja response models
+│   │   │   ├── controller/      # REST controllers and services
+│   │   │   ├── entity/          # JPA entities
+│   │   │   ├── persistence/     # Spring Data repositories
+│   │   │   └── swagger/         # Swagger configuration
+│   │   └── resources/
+│   │       └── application.properties
+│   └── test/
+├── Dockerfile
+├── docker-compose.yml
+├── Jenkinsfile
+├── pom.xml
+├── mvnw
+├── mvnw.cmd
+└── LICENSE
+```
+
+## Configuration
+
+The Daraja integration expects the following environment variables:
+
+```text
+CONSUMER_KEY
+CONSUMER_SECRET
+```
+
+Use credentials issued for your own Safaricom Daraja sandbox application.
+
+Do **not** commit real production credentials to source control.
+
+The application also requires PostgreSQL configuration. The original project contains development defaults in `application.properties` and Docker Compose.
+
+## Running locally
+
+### Prerequisites
+
+You will need:
+
+- Java 8 for the original project
+- Docker / Docker Compose if using the containerized setup
+- PostgreSQL if running the database outside Docker
+
+### Build
+
+Using the Maven Wrapper:
+
+```bash
+./mvnw clean package
+```
+
+or with a local Maven installation:
+
+```bash
+mvn clean package
+```
+
+The original Maven configuration skips tests during the Surefire phase.
+
+### Build the Docker image
+
+```bash
+docker build -t daraja:latest .
+```
+
+### Start the application and PostgreSQL
+
+```bash
+docker-compose up -d
+```
+
+The Compose configuration maps the application to:
+
+```text
+http://localhost:2020
+```
+
+### Stop the environment
+
+```bash
+docker-compose down
+```
+
+## Useful Docker commands
+
+```bash
+docker-compose build
+docker-compose up -d
+docker-compose down
+docker ps
+docker logs <container-id>
+docker container prune
+```
+
+## CI/CD experiment
+
+The repository includes a `Jenkinsfile` from the original project.
+
+It represents an early experiment with automating:
+
+1. repository checkout
+2. Maven/container build
+3. container execution
+4. Spring Boot application deployment
+
+The pipeline should be considered historical and would need correction and modernization before being used today.
+
+## Security note
+
+This repository is a **demo project**, and several choices reflect that context.
+
+Before adapting it to a real payment service, review at least:
+
+- secrets management
+- Daraja credential rotation
+- access-token storage
+- database credentials
+- TLS and outbound HTTP configuration
+- endpoint authentication and authorization
+- actuator exposure
+- logging of sensitive data
+- dependency vulnerabilities
+- request/response validation
+- retries and timeouts
+- idempotency for payment operations
+- audit logging
+- webhook/callback verification
+
+The repository's historical Docker configuration also contains example credentials. They should be treated as exposed and must not be reused for real systems.
+
+## Modernization ideas
+
+A current implementation could use:
+
+- Java 21+ / current LTS Java
+- Spring Boot 3.x+
+- Spring Security
+- Spring Data JPA
+- modern PostgreSQL
+- WebClient or the Java HTTP client
+- OpenAPI 3
+- Docker multi-stage builds
+- Testcontainers
+- GitHub Actions
+- Flyway or Liquibase
+- externalized secret management
+- structured logging
+- OpenTelemetry
+- resilient retry / timeout / circuit-breaker policies
+- proper payment idempotency
+- callback signature or authenticity validation
+
+The core integration idea remains useful, but the implementation should be brought up to current platform and security standards.
+
+## Repository status
+
+**Status:** Historical integration demo
+
+This project is preserved for:
+
+- demonstrating an early M-Pesa Daraja integration
+- portfolio context
+- showing Spring Boot REST integration patterns
+- Docker/PostgreSQL experimentation
+- comparing older Spring Boot practices with modern implementations
+
+It is **not a production-ready payment service**.
+
+## License
+
+This repository is licensed under the **GNU General Public License v3.0**.
+
+## Author
+
+**Peter Mwenda — [msomi22](https://github.com/msomi22)**
+
+Software Engineer focused on Java, backend systems, APIs, integrations, messaging, and distributed systems.
+
+---
+
+_Originally created in 2019 as a demo for integrating a Spring Boot application with Safaricom's M-Pesa Daraja sandbox API._
